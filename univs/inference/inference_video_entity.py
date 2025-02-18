@@ -162,7 +162,7 @@ class InferenceVideoEntity(nn.Module):
 
         self.output_dir = output_dir
         self.custom_videos_enable = custom_videos_enable
-        self.visualize_results_enable = True if custom_videos_enable else False
+        self.visualize_results_enable = True
         self.visualizer = visualization_query_embds(
             reduced_type='pca',
             output_dir=output_dir,
@@ -1253,7 +1253,6 @@ class InferenceVideoEntity(nn.Module):
                 cv2.VideoWriter_fourcc(*'DIVX'),
                 fps=10,
                 frameSize=(out_size[1], out_size[0])
-            )
             for file_name in file_names:
                 out.write(cv2.imread(file_name))
             out.release()
@@ -1317,7 +1316,6 @@ class InferenceVideoEntity(nn.Module):
                 cv2.VideoWriter_fourcc(*'DIVX'),
                 fps=10,
                 frameSize=(out_size[1], out_size[0])
-            )
             for file_name in file_names:
                 out.write(cv2.imread(file_name))
             out.release()

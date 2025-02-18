@@ -1,11 +1,19 @@
-# Convert custom videos to COCO annotations
-python datasets/data_utils/custom_videos/convert_custom_videos_to_coco_test.py 
+#!/usr/bin/env bash
 
-python train_net.py \
-    --num-gpus 1 \
-    --dist-url tcp://127.0.0.1:50191 \
-    --config-file configs/univs_inf_custom_videos/univs_swinb_vps_c1+univs_entity.yaml \
-    --eval-only \
-    INPUT.MIN_SIZE_TEST 512 \
-    MODEL.WEIGHTS pretrained/univs_v2_cvpr/univs_swinb_stage3_f7_wosquare_ema.pth \
-    OUTPUT_DIR datasets/custom_videos/results/
+# Specify your config and model weights
+CONFIG_FILE="configs/univs_r50_stage3.yaml"
+WEIGHT_FILE="output/stage3/model_final.pth"
+
+# Specify input and output directories
+VIDEO_DIR="./datasets/custom_videos/raw"
+OUTPUT_DIR="./datasets/custom_videos/inference"
+
+# Run inference
+python demo/demo_custom_videos.py \
+    --config-file ${CONFIG_FILE} \
+    --video-dir ${VIDEO_DIR} \
+    --output ${OUTPUT_DIR} \
+    --opts MODEL.WEIGHTS ${WEIGHT_FILE} \
+    MODEL.MASK_FORMER.TEST.SEMANTIC_ON True \
+    MODEL.MASK_FORMER.TEST.INSTANCE_ON True \
+    MODEL.MASK_FORMER.TEST.PANOPTIC_ON True
