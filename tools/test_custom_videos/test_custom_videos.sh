@@ -1,19 +1,21 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Specify your config and model weights
-CONFIG_FILE="configs/univs_r50_stage3.yaml"
-WEIGHT_FILE="output/stage3/model_final.pth"
+CONFIG="configs/univs_inf_custom_videos/univs_swinb_vps_c1+univs_entity.yaml"
+CHECKPOINT="pretrained/univs_v2_cvpr/univs_swinb_stage3_f7_wosquare_ema.pth"
+OUTPUT_DIR="datasets/custom_videos/inference"
 
-# Specify input and output directories
-VIDEO_DIR="./datasets/custom_videos/raw"
-OUTPUT_DIR="./datasets/custom_videos/inference"
+# Create output directory
+mkdir -p ${OUTPUT_DIR}
+
+# Enable visualization (optional)
+# You can uncomment this if you want to visualize the results
+# sed -i 's/self.visualize_results_enable = False/self.visualize_results_enable = True/g' univs/inference/inference_video_entity.py
 
 # Run inference
-python demo/demo_custom_videos.py \
-    --config-file ${CONFIG_FILE} \
-    --video-dir ${VIDEO_DIR} \
-    --output ${OUTPUT_DIR} \
-    --opts MODEL.WEIGHTS ${WEIGHT_FILE} \
-    MODEL.MASK_FORMER.TEST.SEMANTIC_ON True \
-    MODEL.MASK_FORMER.TEST.INSTANCE_ON True \
-    MODEL.MASK_FORMER.TEST.PANOPTIC_ON True
+python -m univs.engine.inference \
+  --config-file ${CONFIG} \
+  --num-gpus 1 \
+  MODEL.WEIGHTS ${CHECKPOINT} \
+  MODEL.UniVS.TEST.TASK "vis" \
+  MODEL.UniVS.TEST.CUSTOM_VIDEOS_ENABLE True \
+  OUTPUT_DIR ${OUTPUT_DIR}

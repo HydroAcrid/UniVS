@@ -1,4 +1,4 @@
-_BASE_: Base.yaml
+_BASE_: ../univs_prompt/univs_prompt_r50_16f.yaml
 MODEL:
   BACKBONE:
     NAME: "D2SwinTransformer"
@@ -14,15 +14,21 @@ MODEL:
   WEIGHTS: 'pretrained/univs_v2_cvpr/univs_swinb_stage3_f7_wosquare_ema.pth'
   BoxVIS:
     EMA_ENABLED: True
+    TEST:
+      CLIP_STRIDE: 5
   UniVS:
     TEST:
-      NUM_PREV_FRAMES_MEMORY: 5
-      CUSTOM_VIDEOS_ENABLE: True
+      VIDEO_UNIFIED_INFERENCE_ENABLE: True
+      CUSTOM_VIDEOS_ENABLE: False
 DATASETS:
-  TEST: ("custom_videos", )
+  TEST: ("hurricane_vidnet_vis",)
+
+  # NOTE: HurricaneVidNet dataset ONLY supports VSS
+  # TRAIN: ("HurricaneVidNet_vss_video_train",)
+  # TEST: ("HurricaneVidNet_vss_video_test",)
 INPUT:
   SAMPLING_FRAME_NUM: 5
   MIN_SIZE_TEST: 720
 TEST:
   DETECTIONS_PER_IMAGE: 50
-OUTPUT_DIR: output/inf/custom_videos
+OUTPUT_DIR: output/hurricane_results 

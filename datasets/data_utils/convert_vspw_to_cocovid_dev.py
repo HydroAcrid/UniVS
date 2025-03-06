@@ -7,8 +7,11 @@ from tqdm import trange
 from panopticapi.utils import IdGenerator, save_json
 import argparse
 
-ROOT_DIR = 'datasets/VSPW_480p/'
-with open('datasets/VSPW_480p/label_num_dic_final.json', 'r') as f:
+# ROOT_DIR = 'datasets/VSPW_480p/'
+ROOT_DIR = '/data/datasets/HurricaneVidNet_Dataset/vspw_format_univs/'
+# with open('datasets/VSPW_480p/label_num_dic_final.json', 'r') as f:
+#     CATEGORIES = json.load(f)
+with open(f'{ROOT_DIR}/label_num_dic_final.json', 'r') as f:
     CATEGORIES = json.load(f)
 
 
@@ -39,7 +42,9 @@ def semantic_video_converter():
 
     video_id = -1
     for video_name in sorted(os.listdir(data_folder)):
-        if video_name not in v_val_list:
+        # if video_name not in v_val_list:
+        #     continue
+        if video_name not in v_test_list:
             continue
             
         if video_id > 50:
@@ -67,14 +72,20 @@ def semantic_video_converter():
             "height": origin_image.shape[0],
             "file_names": [os.path.join(video_name, 'origin', image_filename) for image_filename in image_filenames]
         }
-        v_val_videos.append(vid_dict)
+        # v_val_videos.append(vid_dict)
+        v_test_videos.append(vid_dict)
 
     d_val = {
-        'videos': v_val_videos,
+        # 'videos': v_val_videos,
+        'videos': v_test_videos,
         'annotations': None,
         'categories': categories,
     }
-    save_json(d_val, os.path.join(ROOT_DIR, "dev_cocovid.json"))
+    print(d_val)
+    # save_json(d_val, os.path.join(ROOT_DIR, "dev_cocovid.json"))
+    # Using with open syntax instead
+    with open(os.path.join("", "dev_cocovid.json"), 'w') as f:
+        json.dump(d_val, f)
     print('==> Saved json file at %s' % (os.path.join(ROOT_DIR, "dev_cocovid.json")))
 
 

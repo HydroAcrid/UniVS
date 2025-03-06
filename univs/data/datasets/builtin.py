@@ -23,6 +23,8 @@ from .entityseg import _get_entityseg_instance_meta, _get_entityseg_panoptic_met
 # referring task
 from .refcoco import _get_refcoco_meta, register_refcoco
 
+from .hurricane_vidnet import register_hurricane_dataset
+
 
 _PREDEFINED_SPLITS_SA_1B = {
     "sa_1b_train_250k_1": ("sa_1b/images", "sa_1b/annotations_250k/annotations_250k_1.json"),
@@ -577,6 +579,44 @@ def register_raw_videos(root):
         )
 
 
+
+
+# # ====    Predefined splits for HurricaneVidNet (SIMILAR TO VSPW)    =========== #
+# _PREDEFINED_SPLITS_HurricaneVidNet = {
+#     "HurricaneVidNet_vss_video_train": (
+#         "vspw_format/data/",
+#         "vspw_format/train.txt",
+#     ),
+#     "HurricaneVidNet_vss_video_test": (
+#         "vspw_format/data/",
+#         "vspw_format/test.txt",
+#     ),
+#     "HurricaneVidNet_vss_video_val": (
+#         "vspw_format/data/",
+#         "vspw_format/val.txt",
+#     ),
+# }
+
+# # NOTE: Check out 'vss.py' for the inspiration on how this function is implemented.
+# # We're using the traditional VSPW format w/ txt files that describe the splits between train/val/test.
+# def register_all_hurricane_vidnet(root): # HurricaneVidNet dataset ONLY supports VSS
+#     for key, (image_root, split_txt_file) in _PREDEFINED_SPLITS_HurricaneVidNet.items():
+#         split_txt = split_txt_file.split('/')[-1].split('_')[0] + '.txt'
+
+#         # Assume pre-defined datasets live in `./datasets`.
+#         register_ytvis_instances(
+#             key,
+#             _get_vspw_vss_metadata(split_txt),
+#             os.path.join(root, json_file) if "://" not in json_file else json_file,
+#             os.path.join(root, image_root),
+#             evaluator_type='video_semantic_seg',
+#             has_stuff=True,
+#         )
+
+def register_all_hurricane_vidnet(root):
+    register_hurricane_dataset(root)
+
+
 if __name__.endswith(".builtin"):
     # Assume pre-defined datasets live in `./datasets`.
     _root = os.getenv("DETECTRON2_DATASETS", "datasets")
@@ -612,3 +652,13 @@ if __name__.endswith(".builtin"):
 
     # register raw videos
     register_raw_videos(_root)
+
+    # register hurricane vidnet
+    register_all_hurricane_vidnet(_root)
+
+    # Add to the appropriate dictionary based on your task type
+    # _PREDEFINED_SPLITS_VIS = {
+    #     # existing entries...
+    #     "hurricane_vidnet_vis": ("/data/datasets/HurricaneVidNet_Dataset/images", "/data/datasets/HurricaneVidNet_Dataset/output.json"),
+    # }
+

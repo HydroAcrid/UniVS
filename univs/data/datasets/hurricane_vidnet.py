@@ -28,13 +28,18 @@ def register_hurricane_dataset(root):
     Args:
         root: Path to dataset directory
     """
-    # Your directory structure shows the dataset is directly under datasets/
+    # Check if already registered to avoid duplicate registration
+    if "hurricane_vidnet_video" in DatasetCatalog:
+        return
+    
     DatasetCatalog.register(
         "hurricane_vidnet_video",
         lambda: load_hurricane_video_data(root)
     )
     MetadataCatalog.get("hurricane_vidnet_video").set(
-        **get_hurricane_metadata()
+        **get_hurricane_metadata(),
+        json_file=os.path.join("/data/datasets", "HurricaneVidNet_Dataset", "output.json"),
+        evaluator_type="sem_seg",
     )
 
 def load_hurricane_video_data(root):
@@ -45,8 +50,8 @@ def load_hurricane_video_data(root):
     Returns:
         list[dict]: List of dictionaries in Detectron2 format
     """
-    json_file = os.path.join(root, "HurricaneVidNet_Dataset", "output.json")
-    images_dir = os.path.join(root, "HurricaneVidNet_Dataset", "images")
+    json_file = os.path.join("/data/datasets", "HurricaneVidNet_Dataset", "output.json")
+    images_dir = os.path.join("/data/datasets", "HurricaneVidNet_Dataset", "images")
     
     with PathManager.open(json_file) as f:
         json_info = json.load(f)

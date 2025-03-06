@@ -1,0 +1,13 @@
+_BASE_: "../../../univs/univs_R50.yaml"
+MODEL:
+  WEIGHTS: "pretrained/m2f_panseg/model_final_94dc52.pkl"
+  MASK_FORMER:
+    TEST:
+      SEMANTIC_ON: False
+      INSTANCE_ON: True
+      PANOPTIC_ON: False
+      # VISUALIZE: True  # Comment out this line
+DATASETS:
+  TRAIN: ()
+  TEST: ("hurricane_vidnet_video",)
+OUTPUT_DIR: "output/results/hurricane/"

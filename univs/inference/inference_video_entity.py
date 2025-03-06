@@ -162,7 +162,7 @@ class InferenceVideoEntity(nn.Module):
 
         self.output_dir = output_dir
         self.custom_videos_enable = custom_videos_enable
-        self.visualize_results_enable = True
+        self.visualize_results_enable = True if custom_videos_enable else False
         self.visualizer = visualization_query_embds(
             reduced_type='pca',
             output_dir=output_dir,
@@ -737,7 +737,8 @@ class InferenceVideoEntity(nn.Module):
             nonblank_embds = (gt_embds[matched_tgt_indices, -1] != 0).any(-1)
             gt_embds[matched_tgt_indices, -1] = \
                 (gt_embds[matched_tgt_indices, -1] + pred_embds[matched_pred_indices].mean(1)) / (nonblank_embds[..., None] + 1.)
-            
+            gt_mask_quality_scores[matched_tgt_indices] += mask_quality_scores[matched_pred_indices]
+
             targets_per_video['logits'] = gt_logits
             targets_per_video['embds'] = gt_embds
             targets_per_video['mask_logits'] = gt_mask_logits
@@ -1311,7 +1312,7 @@ class InferenceVideoEntity(nn.Module):
                 file_names, 
                 key=lambda f: int(f.split("/")[-1].split('_')[-1].replace('.jpg', ''))
             )
-            out = cv2.VideoWriter (
+            out = cv2.VideoWriter(
                 '/'.join([save_dir, video_id + '.avi']),
                 cv2.VideoWriter_fourcc(*'DIVX'),
                 fps=10,
@@ -1321,7 +1322,6 @@ class InferenceVideoEntity(nn.Module):
                 out.write(cv2.imread(file_name))
             out.release()
             print(f"save all frames with pan. seg. into {video_id}.avi")
-            
 
     def plot_query_embds_per_video(self, targets):
         for targets_per_video in targets:
